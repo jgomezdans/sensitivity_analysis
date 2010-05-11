@@ -58,10 +58,21 @@ def test_morris ():
     delta = 2/3.
     k = 2
     drange = numpy.arange ( 0, 4./3, 1./3)
+    B_star = []
     for i in itertools.product( drange, drange, drange, \
                                 drange, drange, drange ):
-        B_star = generate_trajectories ( numpy.array(i), \
-            k, delta )
+        B_star.append (generate_trajectories ( numpy.array(i), \
+            k, delta ) )
+    B_star = numpy.array ( B_star )
+    ee = []
+    for i in xrange(B_star.shape[0]):
+        x0 = B_star[i,0,:]
+        g_pre = sobol ( x0 )
+        for j in xrange(1, 7):
+            x = B_star[i, j, :]
+            g = sobol( x )
+            ee.append( g-g_pre )
+            g_pre = g
     pdb.set_trace()
 if __name__=="__main__":
     #test_generate_trajectories()
