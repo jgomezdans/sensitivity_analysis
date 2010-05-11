@@ -39,9 +39,11 @@ def test_morris ():
     fsobol = lambda x, *a: sobol (x, numpy.array(a))
     (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
         num_traj, drange, \
-        func=fsobol, args=(a), r=None, \
-        sampling="Morris" )
-
+        func=fsobol, args=(a), r=10, \
+        sampling="Campolongo" )
+    print mu_star
+    print sigma
+    print 1./a
     pdb.set_trace()
 if __name__=="__main__":
     test_generate_trajectory()

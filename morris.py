@@ -44,7 +44,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
                            sampling="Morris" ):
     if sampling != "Morris":
-        assert r != None
+        assert r.lower() != "campolongo"
         raise ValueError, "For Campolongo scheme, r >0"
     B_star = []
     # Create all trajectories. Define starting point
