@@ -42,7 +42,7 @@ def test_morris ():
         func=fsobol, args=(a), r=None, \
         sampling="Morris" )
 
-
+    pdb.set_trace()
 if __name__=="__main__":
     test_generate_trajectory()
     test_morris()

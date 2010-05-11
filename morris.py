@@ -58,7 +58,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     # Next stage: carry out the sensitivity analysis
     if sampling != "Morris":
         B_star = campolongo_sampling ( B_star, r )
-    ee = list( k*([],)) 
+    ee = [ [] for i in xrange(k) ]
     for i in xrange(B_star.shape[0]):
         #for each trajectory, calculate the value of the model
         # at the starting point
@@ -70,12 +70,15 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
             #... and calculate the model output
             g = func( x, *args )
             #store the difference. There's a denominator term here
-            ee[numpy.nonzero(B_star[i, j, :] - \
-                    B_star[i, j-1, :])[0]].append( g-g_pre )
+            idx = numpy.nonzero(B_star[i, j, :] - \
+                    B_star[i, j-1, :])[0]
+            ee[idx].append( g-g_pre )
+            
             # Store the current value as the previous for the next
             # displacement along the trajectory
             g_pre = g
     # ee contains the distribution. Means and so on
+    pdb.set_trace()
     E = [ numpy.array(x) for x in ee]
     mu_star =[ numpy.abs(u).mean() for u in E]
     mu =[ u.mean() for u in E]
