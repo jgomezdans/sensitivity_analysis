@@ -27,6 +27,7 @@ def generate_trajectory ( x0, p, delta ):
 
 def campolongo_sampling ( b_star, r ):
     num_traj = b_star.shape[0]
+    k = b_star.shape[2]
     max_dist = 0.
     for h in itertools.combinations (range(num_traj), 4):
         for (m,l) in itertools.combinations (h, 2):
@@ -44,8 +45,10 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
                            sampling="Morris" ):
     if sampling != "Morris":
-        assert r.lower() != "campolongo"
-        raise ValueError, "For Campolongo scheme, r >0"
+        if sampling.lower() != "campolongo":
+            raise ValueError, "For Campolongo scheme, r >0"
+        if r==0:
+            raise ValueError, "Need a subset of chains"
     B_star = []
     # Create all trajectories. Define starting point
     # And calculate trajectory

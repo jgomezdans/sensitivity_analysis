@@ -39,7 +39,7 @@ def test_morris ():
     fsobol = lambda x, *a: sobol (x, numpy.array(a))
     (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
         num_traj, drange, \
-        func=fsobol, args=(a), r=10, \
+        func=fsobol, args=(a), r=4, \
         sampling="Campolongo" )
     print mu_star
     print sigma
