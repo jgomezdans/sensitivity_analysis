@@ -9,7 +9,7 @@ def sobol ( x, a ):
     g = (numpy.abs(4.0*x -2 ) + a)/(1+a)
     return g.prod()
 
-def generate_trajectories ( x0, p, delta ):
+def generate_trajectory ( x0, p, delta ):
     """
     Generate Morris trajectories to sample parameter space
     """
@@ -44,13 +44,70 @@ def generate_trajectories ( x0, p, delta ):
                 #for z in xrange(k):
                     #accum += total_traj[m,] - total_traj[l]
         
-def test_generate_trajectories ():
+def test_generate_trajectory ():
     k = 2
     p = 4
     delta = 2/3.
     B_star = generate_trajectories ( numpy.array([1./3, 1./3]), \
                 k, delta )
     pdb.set_trace()
+
+def campolongo_sampling ( b_star, r ):
+    num_traj = b_star.shape[0]
+    max_dist = 0.
+    for h in itertools.combinations (range(num_traj), 4):
+        for (m,l) in itertools.combinations (h, 2):
+            accum = 0.
+            for ( i, j ) in itertools.izip ( range(k), range(k) ):
+                A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
+                        for z in xrange(k) ]
+                A = numpy.array( numpy.sqrt (A) ).sum()
+                accum += A
+        if max_dist < accum:
+            selected_trajectories = h
+    return b_star[ selected_trajectories, :, :]
+            
+def sensitivity_analysis ( p, k, delta, num_traj, drange, \
+                           func=sobol, args=(), r=None, \
+                           sampling="Morris" ):
+    if sampling != "Morris":
+        assert r != None
+        raise ValueError, "For Campolongo scheme, r >0"
+    B_star = []
+    # Create all trajectories. Define starting point
+    # And calculate trajectory
+    for i in itertools.product( drange, drange, drange, \
+                                drange, drange, drange ):
+        B_star.append (generate_trajectories ( numpy.array(i), \
+            k, delta ) )
+    # B_star contains all our trajectories
+    B_star = numpy.array ( B_star )
+    # Next stage: carry out the sensitivity analysis
+    if sampling != "Morris":
+        B_star = campolongo_sampling ( B_star, r )
+    ee = [ k*([],)]
+    for i in xrange(B_star.shape[0]):
+        #for each trajectory, calculate the value of the model
+        # at the starting point
+        x0 = B_star[i,0,:]
+        g_pre = func ( x0, *args )
+        for j in xrange(1, 7):
+            # Get the new point in the trajectory
+            x = B_star[i, j, :]
+            #... and calculate the model output
+            g = func( x, *args )
+            #store the difference. There's a denominator term here
+            ee[numpy.nonzero(B_star[i, j, :] - \
+                    B_star[i, j-1, :])[0]].append( g-g_pre )
+            # Store the current value as the previous for the next
+            # displacement along the trajectory
+            g_pre = g
+    # ee contains the distribution. Means and so on
+    E = [ numpy.array(x) for x in ee]
+    mu_star =[ numpy.abs(u).mean() for u in E]
+    mu =[ u.mean() for u in E]
+    sigma =[ u.std() for u in E]
+    return ( mu_star, mu, sigma )
 
 def test_morris ():
     # A test of the Morris SA scheme
@@ -75,7 +132,7 @@ def test_morris ():
     B_star = numpy.array ( B_star )
     # Next stage: carry out the sensitivity analysis
     
-    ee = []
+    ee = [ k*([],)]
     for i in xrange(B_star.shape[0]):
         #for each trajectory, calculate the value of the model
         # at the starting point
@@ -87,11 +144,12 @@ def test_morris ():
             #... and calculate the model output
             g = sobol( x, a )
             #store the difference. There's a denominator term here
-            ee.append( g-g_pre )
+            ee[numpy.nonzero(B_star[i,j,:]-B_star[i,j-1,:])[0]].append( g-g_pre )
             # Store the current value as the previous for the next
             # displacement along the trajectory
             g_pre = g
     # ee contains the distribution. Means and so on
+    ee = numpy.array(ee)
     pdb.set_trace()
 if __name__=="__main__":
     #test_generate_trajectories()
