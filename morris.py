@@ -41,7 +41,7 @@ def campolongo_sampling ( b_star, r ):
     return b_star[ selected_trajectories, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
-                           func=sobol, args=(), r=None, \
+                           func, args=(), r=None, \
                            sampling="Morris" ):
     if sampling != "Morris":
         assert r != None
@@ -51,14 +51,14 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     # And calculate trajectory
     for i in itertools.product( drange, drange, drange, \
                                 drange, drange, drange ):
-        B_star.append (generate_trajectories ( numpy.array(i), \
+        B_star.append (generate_trajectory ( numpy.array(i), \
             k, delta ) )
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
     # Next stage: carry out the sensitivity analysis
     if sampling != "Morris":
         B_star = campolongo_sampling ( B_star, r )
-    ee = [ k*([],)]
+    ee = list( k*([],)) 
     for i in xrange(B_star.shape[0]):
         #for each trajectory, calculate the value of the model
         # at the starting point
