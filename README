@@ -1,0 +1,8 @@
+SENSITIVITY ANALYSIS
+====================
+
+Jose Gomez-Dans
+
+A couple of python functions to perform sensitivty analysis based on the ideas of Morris and Campolongo. The latter are unfortunately too slow to consider as of yet, though!
+
+J
