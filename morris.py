@@ -6,6 +6,10 @@ import pdb
 def generate_trajectory ( x0, p, delta ):
     """
     Generate Morris trajectories to sample parameter space
+
+    @param x0: Initial trajectory location
+    @param p: Number of quantisation levels for parameter space
+    @param delta: The delta parameter from Saltelli et al.
     """
     k = x0.shape[0]
 
@@ -26,6 +30,15 @@ def generate_trajectory ( x0, p, delta ):
     return B_star
 
 def campolongo_sampling ( b_star, r ):
+    """
+    The campolongo sampling strategy, a brute-force search to find
+    a set of r trajectories that would enable the best possible
+    sampling of parameter space.
+
+    My implementation is impractical as of yet!
+
+    @param b_star: a (num_traj, k+1, k) trajectory matrix of elemental effects. A set of r that maximise parameter space exploration will beh chosen.
+    """
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
     max_dist = 0.
@@ -44,6 +57,18 @@ def campolongo_sampling ( b_star, r ):
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
                            sampling="Morris" ):
+    """
+    Carry out a sensitivity analysis using the Morris approach.
+
+    @param p: The :math:`p` parameter: parameter space quantisation.
+    @param k: Number of parameters.
+    @param num_traj: Number of trajectories to calculate (Morris method)
+    @param drange: Ranges to be used.
+    @param func: Model function
+    @param args: extra arguments to model function
+    @param r: Campolongo;s trajectories (:math:`r<num_traj`)
+    @param sampling: Sampling type. Either "Morris" or "Campolongo"
+    """
     if sampling != "Morris":
         if sampling.lower() != "campolongo":
             raise ValueError, "For Campolongo scheme, r >0"
@@ -81,7 +106,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
             # displacement along the trajectory
             g_pre = g
     # ee contains the distribution. Means and so on
-    pdb.set_trace()
+    #pdb.set_trace()
     E = [ numpy.array(x) for x in ee]
     mu_star =[ numpy.abs(u).mean() for u in E]
     mu =[ u.mean() for u in E]
