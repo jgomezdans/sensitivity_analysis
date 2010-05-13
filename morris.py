@@ -42,7 +42,9 @@ def campolongo_sampling ( b_star, r ):
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
     max_dist = 0.
+    cnt = 0
     for h in itertools.combinations (range(num_traj), r):
+        cnt += 1
         accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
         #for (m,l) in itertools.combinations (h, 2):
             #accum = 0.
@@ -53,6 +55,8 @@ def campolongo_sampling ( b_star, r ):
                 #accum += A
         if max_dist < accum:
             selected_trajectories = h
+        if cnt%100 == 0:
+            print cnt, h
     return b_star[ selected_trajectories, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
@@ -78,10 +82,14 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     B_star = []
     # Create all trajectories. Define starting point
     # And calculate trajectory
+    counter = 0
     for i in itertools.product( drange, drange, drange, \
                                 drange, drange, drange ):
-        B_star.append (generate_trajectory ( numpy.array(i), \
-            k, delta ) )
+        if numpy.random.rand()>0.5:
+            B_star.append (generate_trajectory ( numpy.array(i), \
+                k, delta ) )
+            counter+=1
+            if counter>num_traj: break
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
     # Next stage: carry out the sensitivity analysis
