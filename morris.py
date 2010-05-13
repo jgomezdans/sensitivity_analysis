@@ -43,13 +43,14 @@ def campolongo_sampling ( b_star, r ):
     k = b_star.shape[2]
     max_dist = 0.
     for h in itertools.combinations (range(num_traj), r):
-        for (m,l) in itertools.combinations (h, 2):
-            accum = 0.
-            for ( i, j ) in itertools.izip ( range(k), range(k) ):
-                A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
-                        for z in xrange(k) ]
-                A = numpy.array( numpy.sqrt (A) ).sum()
-                accum += A
+        accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for (m,l,i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
+        #for (m,l) in itertools.combinations (h, 2):
+            #accum = 0.
+            #for ( i, j ) in itertools.izip ( range(k), range(k) ):
+                #A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
+                        #for z in xrange(k) ]
+                #A = numpy.array( numpy.sqrt (A) ).sum()
+                #accum += A
         if max_dist < accum:
             selected_trajectories = h
     return b_star[ selected_trajectories, :, :]
