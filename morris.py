@@ -42,7 +42,7 @@ def campolongo_sampling ( b_star, r ):
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
     max_dist = 0.
-    for h in itertools.combinations (range(num_traj), 4):
+    for h in itertools.combinations (range(num_traj), r):
         for (m,l) in itertools.combinations (h, 2):
             accum = 0.
             for ( i, j ) in itertools.izip ( range(k), range(k) ):
