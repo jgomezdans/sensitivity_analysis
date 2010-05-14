@@ -42,39 +42,28 @@ def campolongo_sampling ( b_star, r ):
     import math
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
-    new_traj = numpy.arange(num_traj)
-    numpy.random.shuffle( new_traj )
-    b_prime = b_star[new_traj[:100], :, :]
     max_dist = 0.
     cnt = 0
-    #todo = [[ numpy.sqrt(((b_prime[m, i, :] - b_prime[l, j, :])**2).sum()) for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(10), r) ]
+    # Precalculate distances between all pairs of trajectories
     traj_distance = {}
-    for (m,l) in itertools.products(range(100), range(100)):
+    for (m,l) in itertools.product(range(num_traj), range(num_traj)):
         for ( i, j ) in itertools.product ( range(k), range(k) ):
-            A = [ (b_prime[m, i, z] - b_prime[l, j, z])**2 \
-            for z in xrange(k) ]
-            traj_distance[(m,l)] = math.sqrt (sum(A))
+            A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
+                                    for z in xrange(k) ]
+            traj_distance[(m,l)] = sum(A)#math.sqrt (sum(A))
             
         
-        
-    for h in itertools.combinations (range(100), r):
+    # Calculate aggregated distances by groups of trajectories
+    for h in itertools.combinations (range(num_traj), r):
         cnt += 1
         accum = 0
-        #accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
         for (m,l) in itertools.combinations (h, 2):
             accum += traj_distance[(m,l)]
-            #for ( i, j ) in itertools.product ( range(k), range(k) ):
-                #A = [ (b_prime[m, i, z] - b_prime[l, j, z])**2 \
-                        #for z in xrange(k) ]
-                #A = math.sqrt (sum(A))
-                #accum += A
         if max_dist < accum:
             selected_trajectories = h
             print h, accum
             max_dist = accum
-        #if cnt%100 == 0:
-            #print cnt, h
-    pdb.set_trace()
+            
     return b_prime[ selected_trajectories, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \

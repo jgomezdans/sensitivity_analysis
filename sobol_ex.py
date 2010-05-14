@@ -20,7 +20,7 @@ num_traj = 100
 drange = numpy.arange ( 0, 4./3, 1./3)
 fsobol = lambda x, *a: sobol (x, numpy.array(a))
 (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
-                    num_traj, drange, r=4, \
+                    num_traj, drange, r=10, \
                     func=fsobol, args=(a), sampling="campolongo" )
 Labels=[ r'$x_{%1d}$'%i for i in xrange(1,7)]
 plt.bar(numpy.arange(6)+.5,mu_star, width=0.5, fc='0.8', \
