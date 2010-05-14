@@ -41,9 +41,11 @@ def campolongo_sampling ( b_star, r ):
     """
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
+    new_traj = numpy.random.shuffle(numpy.arange(num_traj))[:100]
+    b_prime = b_star[new_traj, :, :]
     max_dist = 0.
     cnt = 0
-    todo = [[ numpy.sqrt(((b_star[m, i, :] - b_star[l, j, :])**2).sum()) for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(num_traj), r) ]
+    todo = [[ numpy.sqrt(((b_prime[m, i, :] - b_prime[l, j, :])**2).sum()) for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(num_traj), r) ]
     ###for h in itertools.combinations (range(num_traj), r):
         ###cnt += 1
         ###accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
@@ -59,7 +61,7 @@ def campolongo_sampling ( b_star, r ):
         #if cnt%100 == 0:
             #print cnt, h
     pdb.set_trace()
-    return b_star[ selected_trajectories, :, :]
+    return b_prime[ selected_trajectories, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
