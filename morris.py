@@ -43,7 +43,7 @@ def campolongo_sampling ( b_star, r ):
     k = b_star.shape[2]
     max_dist = 0.
     cnt = 0
-    todo = [[ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(num_traj), r) ]
+    todo = [[ numpy.sqrt(((b_star[m, i, :] - b_star[l, j, :])**2).sum()) for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(num_traj), r) ]
     ###for h in itertools.combinations (range(num_traj), r):
         ###cnt += 1
         ###accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
