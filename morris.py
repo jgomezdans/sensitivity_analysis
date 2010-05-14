@@ -39,25 +39,39 @@ def campolongo_sampling ( b_star, r ):
 
     @param b_star: a (num_traj, k+1, k) trajectory matrix of elemental effects. A set of r that maximise parameter space exploration will beh chosen.
     """
+    import math
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
-    new_traj = numpy.random.shuffle(numpy.arange(num_traj))[:100]
-    b_prime = b_star[new_traj, :, :]
+    new_traj = numpy.arange(num_traj)
+    numpy.random.shuffle( new_traj )
+    b_prime = b_star[new_traj[:100], :, :]
     max_dist = 0.
     cnt = 0
-    todo = [[ numpy.sqrt(((b_prime[m, i, :] - b_prime[l, j, :])**2).sum()) for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(num_traj), r) ]
-    ###for h in itertools.combinations (range(num_traj), r):
-        ###cnt += 1
-        ###accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
-        #for (m,l) in itertools.combinations (h, 2):
-            #accum = 0.
-            #for ( i, j ) in itertools.izip ( range(k), range(k) ):
-                #A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
+    #todo = [[ numpy.sqrt(((b_prime[m, i, :] - b_prime[l, j, :])**2).sum()) for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))] for h in itertools.combinations(range(10), r) ]
+    traj_distance = {}
+    for (m,l) in itertools.products(range(100), range(100)):
+        for ( i, j ) in itertools.product ( range(k), range(k) ):
+            A = [ (b_prime[m, i, z] - b_prime[l, j, z])**2 \
+            for z in xrange(k) ]
+            traj_distance[(m,l)] = math.sqrt (sum(A))
+            
+        
+        
+    for h in itertools.combinations (range(100), r):
+        cnt += 1
+        accum = 0
+        #accum = [ numpy.sqrt((b_star[m, i, :] - b_star[l, j, :])**2).sum() for ((m,l),i,j) in itertools.product ( itertools.combinations(h,2), range(k), range(k))]
+        for (m,l) in itertools.combinations (h, 2):
+            accum += traj_distance[(m,l)]
+            #for ( i, j ) in itertools.product ( range(k), range(k) ):
+                #A = [ (b_prime[m, i, z] - b_prime[l, j, z])**2 \
                         #for z in xrange(k) ]
-                #A = numpy.array( numpy.sqrt (A) ).sum()
+                #A = math.sqrt (sum(A))
                 #accum += A
-        #if max_dist < accum:
-            #selected_trajectories = h
+        if max_dist < accum:
+            selected_trajectories = h
+            print h, accum
+            max_dist = accum
         #if cnt%100 == 0:
             #print cnt, h
     pdb.set_trace()
