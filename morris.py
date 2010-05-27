@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy
 import itertools
-import pdb
+#import pdb
 
 def generate_trajectory ( x0, p, delta ):
     """
@@ -39,7 +39,7 @@ def campolongo_sampling ( b_star, r ):
 
     @param b_star: a (num_traj, k+1, k) trajectory matrix of elemental effects. A set of r that maximise parameter space exploration will beh chosen.
     """
-    import math
+    #import math
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
     max_dist = 0.
@@ -64,7 +64,7 @@ def campolongo_sampling ( b_star, r ):
             print h, accum
             max_dist = accum
             
-    return b_prime[ selected_trajectories, :, :]
+    return b_star[ selected_trajectories, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
