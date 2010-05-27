@@ -2,7 +2,9 @@
 import numpy
 import itertools
 #import pdb
-
+"""
+The Morris-Campolongo sensitivity analysis procedure.
+"""
 def generate_trajectory ( x0, p, delta ):
     """
     Generate Morris trajectories to sample parameter space
@@ -13,13 +15,13 @@ def generate_trajectory ( x0, p, delta ):
     """
     k = x0.shape[0]
 
-    if p%2 != 0:
+    if p % 2 != 0:
         raise ValueError, "p number has to be even!"
     signo = numpy.random.rand( k )
     signo = numpy.where (signo>0.5, 1, -1)
     D = numpy.matrix ( numpy.diag ( signo ) )
     #D = numpy.matrix([1,0,0, -1]).reshape((k,k))
-    P = numpy.zeros((k,k))
+    P = numpy.zeros((k, k))
     pr = numpy.random.permutation ( k )
     for i in xrange(k):
         P[i, pr[i]] = 1
@@ -46,19 +48,19 @@ def campolongo_sampling ( b_star, r ):
     cnt = 0
     # Precalculate distances between all pairs of trajectories
     traj_distance = {}
-    for (m,l) in itertools.product(range(num_traj), range(num_traj)):
+    for (m, l) in itertools.product(range(num_traj), range(num_traj)):
         for ( i, j ) in itertools.product ( range(k), range(k) ):
             A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
                                     for z in xrange(k) ]
-            traj_distance[(m,l)] = sum(A)#math.sqrt (sum(A))
+            traj_distance[(m, l)] = sum(A)#math.sqrt (sum(A))
             
         
     # Calculate aggregated distances by groups of trajectories
     for h in itertools.combinations (range(num_traj), r):
         cnt += 1
         accum = 0
-        for (m,l) in itertools.combinations (h, 2):
-            accum += traj_distance[(m,l)]
+        for (m, l) in itertools.combinations (h, 2):
+            accum += traj_distance[(m, l)]
         if max_dist < accum:
             selected_trajectories = h
             print h, accum
@@ -84,7 +86,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     if sampling != "Morris":
         if sampling.lower() != "campolongo":
             raise ValueError, "For Campolongo scheme, r >0"
-        if r==0:
+        if r == 0:
             raise ValueError, "Need a subset of chains"
     B_star = []
     # Create all trajectories. Define starting point
@@ -92,11 +94,11 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     counter = 0
     for i in itertools.product( drange, drange, drange, \
                                 drange, drange, drange ):
-        if numpy.random.rand()>0.5:
+        if numpy.random.rand() > 0.5:
             B_star.append (generate_trajectory ( numpy.array(i), \
                 k, delta ) )
-            counter+=1
-            if counter>num_traj: break
+            counter += 1
+            if counter > num_traj: break
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
     # Next stage: carry out the sensitivity analysis
@@ -106,7 +108,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     for i in xrange(B_star.shape[0]):
         #for each trajectory, calculate the value of the model
         # at the starting point
-        x0 = B_star[i,0,:]
+        x0 = B_star[i, 0, :]
         g_pre = func ( x0, *args )
         for j in xrange(1, 7):
             # Get the new point in the trajectory
