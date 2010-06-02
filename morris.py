@@ -10,8 +10,8 @@ def product(*args, **kwds):
     result = [[]]
     for pool in pools:
         result = [x+[y] for x in result for y in pool]
-        for prod in result:
-            yield tuple(prod)
+    for prod in result:
+        yield tuple(prod)
 
 def combinations(iterable, r):
     # combinations('ABCD', 2) --> AB AC AD BC BD CD
@@ -155,6 +155,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
             if counter>num_traj: break
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
+    pdb.set_trace()
     # Next stage: carry out the sensitivity analysis
     if sampling != "Morris":
         B_star = campolongo_sampling ( B_star, r )
