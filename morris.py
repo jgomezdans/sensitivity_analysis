@@ -146,7 +146,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     # Create all trajectories. Define starting point
     # And calculate trajectory
     counter = 0
-    for i in itertools.product( drange, drange, drange, \
+    for i in product( drange, drange, drange, \
                                 drange, drange, drange ):
         if numpy.random.rand()>0.5:
             B_star.append (generate_trajectory ( numpy.array(i), \
