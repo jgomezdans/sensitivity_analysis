@@ -7,9 +7,9 @@ def generate_trajectory ( x0, p, delta ):
     """
     Generate Morris trajectories to sample parameter space
 
-    @param x0: Initial trajectory location
-    @param p: Number of quantisation levels for parameter space
-    @param delta: The delta parameter from Saltelli et al.
+    :param x0: Initial trajectory location
+    :param p: Number of quantisation levels for parameter space
+    :param delta: The delta parameter from Saltelli et al.
     """
     k = x0.shape[0]
 
@@ -46,11 +46,12 @@ def campolongo_sampling ( b_star, r ):
 
     # Precalculate distances between all pairs of trajectories
     traj_distance = {}
-    for (m,l) in itertools.product(range(num_traj), range(num_traj)):
+    for ( m, l ) in itertools.product(range(num_traj), range(num_traj)):
         for ( i, j ) in itertools.product ( range(k), range(k) ):
             A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
                                     for z in xrange(k) ]
-            traj_distance[(m,l)] = sum(A)#math.sqrt (sum(A))
+            # A will always be >0, so no need for sqrt
+            traj_distance[ ( m, l ) ] = sum( A )#math.sqrt (sum(A))
             
         
     # Calculate aggregated distances by groups of trajectories
@@ -64,18 +65,31 @@ def campolongo_sampling ( b_star, r ):
             cnt += 1
             accum = 0
             for (m,l) in itertools.combinations (h, 2):
-                accum += traj_distance[(m,l)]
+                accum += traj_distance[ ( m, l ) ]
             if max_dist < accum:
                 selected_trajectories[batches] =  h
                 max_dist = accum
-                #print "\t",h, accum,
-        #print batches
-        #selected_trajectories[batches] = \
-                #numpy.array ( selected_trajectories[batches] )
-        ##selected_trajectories[batches].sort()
-        #selected_trajectories[batches][:(r+1)]
+        print batches, max_dist
     selected_trajectories = numpy.array ( selected_trajectories ).flatten()
-    return b_star[ selected_trajectories, :, :]
+    cnt = 0
+    traj = []
+    distance = []
+    # Now, we can pick and mix the trajectories from the best sets
+    for h in itertools.combinations (selected_trajectories, r):
+        cnt += 1
+        accum = 0
+        for (m,l) in itertools.combinations (h, 2):
+            accum += traj_distance[ ( m, l ) ]
+        if max_dist < accum:
+            print h, accum
+            traj.append( h )
+            distance.append ( accum )
+            max_dist = accum
+
+    distance = numpy.array ( distance )
+    i = distance.argsort()
+    s = numpy.unique ( numpy.array ( traj) [i][-(r+1):] )
+    return b_star[ s, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
