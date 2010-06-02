@@ -16,11 +16,11 @@ delta = 2/3.
 k = 6
 # drange defines the staring points for all
 # trajectories
-num_traj = 100
+num_traj = 1000
 drange = numpy.arange ( 0, 4./3, 1./3)
 fsobol = lambda x, *a: sobol (x, numpy.array(a))
 (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
-                    num_traj, drange, r=10, \
+                    num_traj, drange, r=4, \
                     func=fsobol, args=(a), sampling="campolongo" )
 Labels=[ r'$x_{%1d}$'%i for i in xrange(1,7)]
 plt.bar(numpy.arange(6)+.5,mu_star, width=0.5, fc='0.8', \

@@ -42,8 +42,8 @@ def campolongo_sampling ( b_star, r ):
     import math
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
-    max_dist = 0.
-    cnt = 0
+
+
     # Precalculate distances between all pairs of trajectories
     traj_distance = {}
     for (m,l) in itertools.product(range(num_traj), range(num_traj)):
@@ -54,17 +54,28 @@ def campolongo_sampling ( b_star, r ):
             
         
     # Calculate aggregated distances by groups of trajectories
-    for h in itertools.combinations (range(num_traj), r):
-        cnt += 1
-        accum = 0
-        for (m,l) in itertools.combinations (h, 2):
-            accum += traj_distance[(m,l)]
-        if max_dist < accum:
-            selected_trajectories = h
-            print h, accum
-            max_dist = accum
-            
-    return b_prime[ selected_trajectories, :, :]
+    selected_trajectories = list(([],)*8)
+    for batches in xrange(8):
+        traj_start = ( num_traj/8. )*batches
+        traj_end = (num_traj/8.)*(batches+1)
+        cnt = 0
+        max_dist = 0.
+        for h in itertools.combinations (range(traj_start, traj_end), r):
+            cnt += 1
+            accum = 0
+            for (m,l) in itertools.combinations (h, 2):
+                accum += traj_distance[(m,l)]
+            if max_dist < accum:
+                selected_trajectories[batches] =  h
+                max_dist = accum
+                #print "\t",h, accum,
+        #print batches
+        #selected_trajectories[batches] = \
+                #numpy.array ( selected_trajectories[batches] )
+        ##selected_trajectories[batches].sort()
+        #selected_trajectories[batches][:(r+1)]
+    selected_trajectories = numpy.array ( selected_trajectories ).flatten()
+    return b_star[ selected_trajectories, :, :]
             
 def sensitivity_analysis ( p, k, delta, num_traj, drange, \
                            func, args=(), r=None, \
