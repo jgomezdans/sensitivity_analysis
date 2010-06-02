@@ -69,7 +69,7 @@ def campolongo_sampling ( b_star, r ):
             if max_dist < accum:
                 selected_trajectories[batches] =  h
                 max_dist = accum
-        print batches, max_dist
+        
     selected_trajectories = numpy.array ( selected_trajectories ).flatten()
     cnt = 0
     traj = []
@@ -81,7 +81,7 @@ def campolongo_sampling ( b_star, r ):
         for (m,l) in itertools.combinations (h, 2):
             accum += traj_distance[ ( m, l ) ]
         if max_dist < accum:
-            print h, accum
+            
             traj.append( h )
             distance.append ( accum )
             max_dist = accum
