@@ -95,7 +95,7 @@ def campolongo_sampling ( b_star, r ):
         for h in combinations (range(traj_start, traj_end), r):
             cnt += 1
             accum = 0
-            for (m,l) incombinations (h, 2):
+            for (m,l) in combinations (h, 2):
                 accum += traj_distance[ ( m, l ) ]
             if max_dist < accum:
                 selected_trajectories[batches] =  h
