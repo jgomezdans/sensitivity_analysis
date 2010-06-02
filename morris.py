@@ -3,6 +3,37 @@ import numpy
 import itertools
 import pdb
 
+def product(*args, **kwds):
+    # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
+    # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+    pools = map(tuple, args) * kwds.get('repeat', 1)
+    result = [[]]
+    for pool in pools:
+        result = [x+[y] for x in result for y in pool]
+        for prod in result:
+            yield tuple(prod)
+
+def combinations(iterable, r):
+    # combinations('ABCD', 2) --> AB AC AD BC BD CD
+    # combinations(range(4), 3) --> 012 013 023 123
+    pool = tuple(iterable)
+    n = len(pool)
+    if r > n:
+        return
+    indices = range(r)
+    yield tuple(pool[i] for i in indices)
+    while True:
+        for i in reversed(range(r)):
+            if indices[i] != i + n - r:
+                break
+        else:
+            return
+        indices[i] += 1
+        for j in range(i+1, r):
+            indices[j] = indices[j-1] + 1
+        yield tuple(pool[i] for i in indices)
+
+
 def generate_trajectory ( x0, p, delta ):
     """
     Generate Morris trajectories to sample parameter space
@@ -46,8 +77,8 @@ def campolongo_sampling ( b_star, r ):
 
     # Precalculate distances between all pairs of trajectories
     traj_distance = {}
-    for ( m, l ) in itertools.product(range(num_traj), range(num_traj)):
-        for ( i, j ) in itertools.product ( range(k), range(k) ):
+    for ( m, l ) in product(range(num_traj), range(num_traj)):
+        for ( i, j ) in product ( range(k), range(k) ):
             A = [ (b_star[m, i, z] - b_star[l, j, z])**2 \
                                     for z in xrange(k) ]
             # A will always be >0, so no need for sqrt
@@ -61,10 +92,10 @@ def campolongo_sampling ( b_star, r ):
         traj_end = (num_traj/8.)*(batches+1)
         cnt = 0
         max_dist = 0.
-        for h in itertools.combinations (range(traj_start, traj_end), r):
+        for h in combinations (range(traj_start, traj_end), r):
             cnt += 1
             accum = 0
-            for (m,l) in itertools.combinations (h, 2):
+            for (m,l) incombinations (h, 2):
                 accum += traj_distance[ ( m, l ) ]
             if max_dist < accum:
                 selected_trajectories[batches] =  h
@@ -75,10 +106,10 @@ def campolongo_sampling ( b_star, r ):
     traj = []
     distance = []
     # Now, we can pick and mix the trajectories from the best sets
-    for h in itertools.combinations (selected_trajectories, r):
+    for h in combinations (selected_trajectories, r):
         cnt += 1
         accum = 0
-        for (m,l) in itertools.combinations (h, 2):
+        for (m,l) in combinations (h, 2):
             accum += traj_distance[ ( m, l ) ]
         if max_dist < accum:
             
