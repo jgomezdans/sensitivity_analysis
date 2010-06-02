@@ -95,7 +95,7 @@ def campolongo_sampling ( b_star, r ):
         for h in combinations (range(traj_start, traj_end), r):
             cnt += 1
             accum = 0
-            for (m,l) incombinations (h, 2):
+            for (m,l) in combinations (h, 2):
                 accum += traj_distance[ ( m, l ) ]
             if max_dist < accum:
                 selected_trajectories[batches] =  h
@@ -146,7 +146,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     # Create all trajectories. Define starting point
     # And calculate trajectory
     counter = 0
-    for i in itertools.product( drange, drange, drange, \
+    for i in product( drange, drange, drange, \
                                 drange, drange, drange ):
         if numpy.random.rand()>0.5:
             B_star.append (generate_trajectory ( numpy.array(i), \
