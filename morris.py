@@ -142,7 +142,6 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
         if sampling.lower() != "campolongo":
             raise ValueError, "For Campolongo scheme, r >0"
         if r == 0:
-        if r==0:
             raise ValueError, "Need a subset of chains"
     B_star = []
     # Create all trajectories. Define starting point
