@@ -155,7 +155,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
             if counter>num_traj: break
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
-    pdb.set_trace()
+    #pdb.set_trace()
     # Next stage: carry out the sensitivity analysis
     if sampling != "Morris":
         B_star = campolongo_sampling ( B_star, r )
