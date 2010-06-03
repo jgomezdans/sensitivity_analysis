@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy
 import itertools
-import pdb
+#import pdb
 
 def product(*args, **kwds):
     # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
@@ -44,13 +44,13 @@ def generate_trajectory ( x0, p, delta ):
     """
     k = x0.shape[0]
 
-    if p%2 != 0:
+    if p % 2 != 0:
         raise ValueError, "p number has to be even!"
     signo = numpy.random.rand( k )
     signo = numpy.where (signo>0.5, 1, -1)
     D = numpy.matrix ( numpy.diag ( signo ) )
     #D = numpy.matrix([1,0,0, -1]).reshape((k,k))
-    P = numpy.zeros((k,k))
+    P = numpy.zeros((k, k))
     pr = numpy.random.permutation ( k )
     for i in xrange(k):
         P[i, pr[i]] = 1
@@ -70,6 +70,7 @@ def campolongo_sampling ( b_star, r ):
 
     @param b_star: a (num_traj, k+1, k) trajectory matrix of elemental effects. A set of r that maximise parameter space exploration will beh chosen.
     """
+    #import math
     import math
     num_traj = b_star.shape[0]
     k = b_star.shape[2]
@@ -140,7 +141,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     if sampling != "Morris":
         if sampling.lower() != "campolongo":
             raise ValueError, "For Campolongo scheme, r >0"
-        if r==0:
+        if r == 0:
             raise ValueError, "Need a subset of chains"
     B_star = []
     # Create all trajectories. Define starting point
@@ -148,11 +149,11 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     counter = 0
     for i in product( drange, drange, drange, \
                                 drange, drange, drange ):
-        if numpy.random.rand()>0.5:
+        if numpy.random.rand() > 0.5:
             B_star.append (generate_trajectory ( numpy.array(i), \
                 k, delta ) )
-            counter+=1
-            if counter>num_traj: break
+            counter += 1
+            if counter > num_traj: break
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
     #pdb.set_trace()
@@ -163,7 +164,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     for i in xrange(B_star.shape[0]):
         #for each trajectory, calculate the value of the model
         # at the starting point
-        x0 = B_star[i,0,:]
+        x0 = B_star[i, 0, :]
         g_pre = func ( x0, *args )
         for j in xrange(1, 7):
             # Get the new point in the trajectory
