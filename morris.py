@@ -156,7 +156,7 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
             if counter > num_traj: break
     # B_star contains all our trajectories
     B_star = numpy.array ( B_star )
-    pdb.set_trace()
+    
     # Next stage: carry out the sensitivity analysis
     if sampling != "Morris":
         B_star = campolongo_sampling ( B_star, r )
@@ -187,3 +187,23 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     sigma =[ u.std() for u in E]
     return ( mu_star, mu, sigma )
 
+def top_down_concordance ( replicates_matrix ):
+    """
+    Top-down concordance coefficient (TDCC) from Iman and Conover.
+
+    :parameter ranks: A matrix (num_parameters, replicate) of parameter
+                      rankings
+    """
+
+    ( k, replicates ) = replicates_matrix.shape
+    ranks = numpy.array([ replicates_matrix[:, i] for i in xrange( replicates )])
+    nsa = replicates
+    # Calculate savage scores... Groar!!!
+    ss = numpy.zeros_like ( ranks )
+    ss = [ numpy.sum(1./numpy.arange( ri, k+1)) for ri in ranks.flat ]
+    numerator = (ss.sum(axis=0)**2).sum() -nsa*nsa*k
+    denominator = nsa*nsa*( k-(1./numpy.arange(1, k+1)).sum() )
+    
+    tdcc = numerator / denominator
+    p_value = nsa * ( k - 1 ) * tdcc
+    return (tdcc, p_value )
