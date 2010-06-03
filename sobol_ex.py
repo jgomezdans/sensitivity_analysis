@@ -16,7 +16,7 @@ delta = 2/3.
 k = 6
 # drange defines the staring points for all
 # trajectories
-num_traj = 1000
+num_traj = 100
 drange = numpy.arange ( 0, 4./3, 1./3)
 fsobol = lambda x, *a: sobol (x, numpy.array(a))
 (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
