@@ -17,12 +17,14 @@ delta = 2/3.
 k = 6
 # drange defines the staring points for all
 # trajectories
-num_traj = 100
+num_traj = 50
 drange = numpy.arange ( 0, 4./3, 1./3)
 fsobol = lambda x, *a: sobol (x, numpy.array(a))
 
 for p_levels in xrange( 2, 12, 2):
-    for r_levels in xrange( 2, 13 ):
+    print p_levels
+    for r_levels in xrange( 3, 7 ):
+        print "\t", r_levels, 
         p = p_levels
         delta = p/(2*(p-1))
         k = 6
@@ -30,9 +32,10 @@ for p_levels in xrange( 2, 12, 2):
         (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
                         num_traj, drange, r=r_levels, \
                         func=fsobol, args=(a), sampling="campolongo" )
-        mu_star = numpy.array ( mu_star )
-        ranker = numpy.hstack ( ranker, (-1*mu_star.argsort().argsort() + 1))
-        pdb.set_trace()
-    
-    #print mu_star.argsort()
-    #print (1./a).argsort()
+        mu_star = np.array ( mu_star )
+        print numpy.argsort(-mu_star).argsort()
+        try:
+            ranker = np.vstack ([ ranker, ((-1*mu_star).argsort().argsort() + 1)])
+        except NameError:
+            ranker = ((-1*mu_star).argsort().argsort() + 1).T
+
