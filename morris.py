@@ -133,18 +133,22 @@ def top_down_concordance ( replicates_matrix ):
     :parameter ranks: A matrix (num_parameters, replicate) of parameter
                       rankings
     """
-
+    from scipy.stats import chisqprob
+    
     ( k, replicates ) = replicates_matrix.shape
     ranks = np.array([ replicates_matrix[:, i] for i in xrange( replicates )])
     nsa = replicates
     # Calculate savage scores... Groar!!!
     ss = np.zeros_like ( ranks )
     ss = [ np.sum(1./np.arange( ri, k+1)) for ri in ranks.flat ]
+    ss = np.array ( ss )
+    ss = np.array([ np.sum(1./np.arange( ri, k+1)) \
+            for ri in ranks.flat ]).reshape ( ( replicates, k ) )
     numerator = (ss.sum(axis=0)**2).sum() -nsa*nsa*k
     denominator = nsa*nsa*( k-(1./np.arange(1, k+1)).sum() )
-    
     tdcc = numerator / denominator
-    p_value = nsa * ( k - 1 ) * tdcc
+    T = nsa * ( k - 1 ) * tdcc
+    p_value = chisqprob( T, k-1 )
     return (tdcc, p_value )
 
 
