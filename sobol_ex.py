@@ -20,10 +20,13 @@ num_traj = 100
 drange = np.arange ( 0, 4./3, 1./3)
 fsobol = lambda x, *a: sobol (x, np.array(a))
 for t in [1]:#xrange(100):
-    (mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
-                        num_traj, drange, r=4, \
-                        func=fsobol, args=(a), sampling="campolongo" )
+    #(mu_star, mu, sigma) = sensitivity_analysis ( p, k, delta, \
+                        #num_traj, drange, r=4, \
+                        #func=fsobol, args=(a), sampling="campolongo" )
 
+    (mu_star, mu, sigma) = sensitivity_analysis ( p, k, num_traj, \
+        r=4, sampling="campolongo", \
+        func=fsobol, args=(a) )
 
     #Labels=[ r'$x_{%1d}$'%i for i in xrange(1,7)]
 

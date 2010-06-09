@@ -36,9 +36,9 @@ def maxweightcliques( dist, nbest, r, N, verbose=10 ):
                 dups.add( tup )
                 all.append( (w + cliqwt(c, p), cp ))
         all.sort( reverse=True )
-        if verbose:
-            print "growcliqs: %s" % e_str( w for w,c in all[:verbose] ) ,
-            print " best: %s" % e_str( cliqdistances( all[0][1], dist )[:10])
+        #if verbose:
+            #print "growcliqs: %s" % e_str( w for w,c in all[:verbose] ) ,
+            #print " best: %s" % e_str( cliqdistances( all[0][1], dist )[:10])
         return all[:nbest]
 
     dist.flat[::dist.shape[0]+1] = -1e10

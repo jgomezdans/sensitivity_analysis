@@ -62,7 +62,7 @@ def generate_trajectory ( x0, p, delta ):
     return B_star
 
 
-def sensitivity_analysis ( p, k, delta, num_traj, drange, \
+def sensitivity_analysis ( p, k,num_traj, \
                            func, args=(), r=None, \
                            sampling="Morris" ):
     """
@@ -71,7 +71,6 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
     @param p: The :math:`p` parameter: parameter space quantisation.
     @param k: Number of parameters.
     @param num_traj: Number of trajectories to calculate (Morris method)
-    @param drange: Ranges to be used.
     @param func: Model function
     @param args: extra arguments to model function
     @param r: Campolongo;s trajectories (:math:`r<num_traj`)
@@ -83,16 +82,18 @@ def sensitivity_analysis ( p, k, delta, num_traj, drange, \
         if r == 0:
             raise ValueError, "Need a subset of chains"
     B_star = []
+    p = float( p )
+    delta = p/(2*p - 2.)
     # Create all trajectories. Define starting point
     # And calculate trajectory
     counter = 0
-    for i in product( drange, drange, drange, \
-                                drange, drange, drange ):
-        if np.random.rand() > 0.5:
-            B_star.append (generate_trajectory ( np.array(i), \
+    starting_ints = np.tile ( np.arange ( 0, 1-delta, step=1/(p-1.)), (k, 1))
+    #print starting_ints
+    for i in xrange ( num_traj ):
+        w = np.random.randint ( 0, k, starting_ints.shape[0] )
+        x0 = starting_ints [ w,0 ]
+        B_star.append (generate_trajectory ( x0, \
                 k, delta ) )
-            counter += 1
-            if counter > num_traj: break
     # B_star contains all our trajectories
     B_star = np.array ( B_star )
     # Next stage: carry out the sensitivity analysis
@@ -198,13 +199,16 @@ def campolongo_sampling ( b_star, r ):
     cliqs = maxweightcliques( dist, nbest, r, N,\
             verbose=verbose )[-1]  # [ (wt, cliq) ... ]
 
-    print "Clique weight,  clique,  distances within clique"
-    print 50 * "-"
+    #print "Clique weight,  clique,  distances within clique"
+    #print 50 * "-"
     passer = []
     for w,c in cliqs:
         passer.append ( c )
-        print "%5.3g  %s  %s" % (
-            w, e_str( c, fmt="%d" ), e_str( cliqdistances( c, dist )[:10]))
-    pdb.set_trace()
-    return b_star [passer, :, :]
+        #print "%5.3g  %s  %s" % (
+            #w, e_str( c, fmt="%d" ), e_str( cliqdistances( c, dist )[:10]))
+    
+    passer = np.array ( passer )
+    t = b_star [passer[0,:], :, :]
+    
+    return b_star [passer[0,:], :, :]
 
